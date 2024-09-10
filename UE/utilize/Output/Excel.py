@@ -29,14 +29,15 @@ class Excel:
         name='output_workflow_'+time.strftime('%Y%B%d_%H_%M_%S')+'.xlsx'
         df.to_excel(path+name, index=False)
 
-    def calculation_zone(self,result):
-        head=["zone_id","total_makespan","makespan","energy","cost"]
+    def calculation_zone(self,result,total_time):
+        head=["zone_id","total_makespan","makespan","energy","cost","run_time"]
         my_data = []
         for i in range(len(result)):
             temp=[]
             for j in range(len(result[i])):
                 temp.append(result[i][j])    
             my_data.append(temp)
+        my_data.append([-1,1,1,1,1,total_time])    
         path=os.getcwd()+'\\UE\\OutputFile\\'
         name='output_calculation_'+time.strftime('%Y%B%d_%H_%M_%S')+'.xlsx'
         df = pd.DataFrame(my_data, columns=head)

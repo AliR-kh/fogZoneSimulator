@@ -13,7 +13,7 @@ class UE_Egine:
     number_zone=0
     dynamic=0
     distribution=None
-    N_A_D=5#numbers of devices that will add to environment
+    N_A_D=0#numbers of devices that will add to environment
     inter_time=[] #times of inter each task to fog environment
     zones=0
     
@@ -33,6 +33,7 @@ class UE_Egine:
 
     
     def discreate_time(self):
+        start_time=time.time()
         #print("discreate time simulation")
         ue_zone=UE_broker() 
         #initializing ue zone and devices
@@ -70,6 +71,8 @@ class UE_Egine:
         else:
             self.zones=response["data"]
             ue_zone.set_uezone(self.zones)
+        finish_time=time.time() 
+        total_time=finish_time-start_time   
         #print("finally")    
         #print(send_message('127.0.0.1',1,{"request":"get_ue_zons"}) )    
         self.zones=send_message('127.0.0.1',3,{"request":"get_ue_zones","data":self.zones})
@@ -77,8 +80,9 @@ class UE_Egine:
         ue_zone.set_uezone(self.zones)  
         total_calculation=send_message('127.0.0.1',3,{"request":"total_calculation",'data':self.zones})
         output=Excel()
-        output.calculation_zone(total_calculation)
+        output.calculation_zone(total_calculation,total_time)
         output.workflow(self.zones)
+        print
         #output.calculation_zone(total_calculation)
         # Print table
         # print(tabulate(my_data, headers=head, tablefmt="grid"))

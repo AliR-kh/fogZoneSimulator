@@ -15,7 +15,7 @@ class Task_reader:
 
     def creat_dag(self,device_id):
         #xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/CyberShake_1000.xml'))
-        xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/Montage_300.xml'))
+        xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/Montage_100.xml'))
         #path=os.path("Config/Workflow/Montage_40.xml")
         tree = ET.parse(xml_path)  # باز کردن فایل xml
         listjob = []

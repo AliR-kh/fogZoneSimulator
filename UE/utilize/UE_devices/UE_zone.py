@@ -3,9 +3,9 @@ class UE_broker:
     ue_zone_list = []
     edge = Edge()
     def creat_ue_zone(self):
-        numb =5#input("enter number of UE zone:")
+        numb =1#input("enter number of UE zone:")
         for count_zon in range(int(numb)):
-            self.ue_zone_list.append(self.edge.create_edge_devices_z_z(count_zon,2,0))
+            self.ue_zone_list.append(self.edge.create_edge_devices_z_z(count_zon,1,0))
         return self.ue_zone_list
     def show_zone(self):
         pass
