@@ -1,6 +1,6 @@
 import math
 class Execut:
-    def run(self, task,current_edge,resource,current_time):
+    def run(self, index,task,current_edge,resource,current_time):
         file_transfer_time_input=0
         file_transfer_time_output=0
         queue_time=0
@@ -24,7 +24,7 @@ class Execut:
             start_time=float(task["time"])
             idle_resource_time=float(task["time"])-float(resource["time"])
         process_time=self.Time_exec(task["runtime"],resource["mips"])    
-        if resource["type"]!="Edge": #transfer time in edge device is ziro
+        if resource["type"]=="Edge": #transfer time in edge device is ziro
             file_transfer_time_input=0
             file_transfer_time_output=0
         else:    
@@ -36,7 +36,7 @@ class Execut:
         #print("task id: ",task["id"],"  end time: ",end_time,"   process time: ",process_time,"    transfer time: ",file_transfer_time, "resource id:{} type:{}".format(resource["id"],resource["type"]))
         
         #print("process time: ",makespan,"  finally task time: ",task["time"])
-        total_energy,active_energy,idle_energy,device_energy=self.get_energry(process_time,file_transfer_time_input,file_transfer_time_output,queue_time,resource,current_edge)
+        total_energy,active_energy,idle_energy,device_energy=self.get_energry(process_time,file_transfer_time_input,file_transfer_time_output,idle_resource_time,resource,current_edge)
         active,resource_transfer_cost,device_transfer_cost=self.get_cost(process_time,file_transfer_time_input,file_transfer_time_output,resource,current_edge)
         
         """this section set attributes of execution in resource and task"""
@@ -61,10 +61,9 @@ class Execut:
         resource["total_energy"]+=total_energy
         resource["total_cost"]+=active+resource_transfer_cost
         """ End section """
-        
-        if (start_time+process_time)>current_time:
-            current_time=(start_time+process_time)
-        return current_time#end_time,active_energy,idle_energy,process_cost,transfer_cost,memory_cost
+        if (start_time+process_time)>current_time[index]:
+            current_time[index]=(start_time+process_time)
+        return current_time[index]#end_time,active_energy,idle_energy,process_cost,transfer_cost,memory_cost
         
     def Time_exec(self,task,resource): #calculation time of run a job in cpu
         size_run=float(task) * 1000
@@ -91,7 +90,7 @@ class Execut:
         file_transfer_time=size_task/1000/float(bandwidth)
         return file_transfer_time
     
-    def get_energry(self,process_time,file_transfer_time_input,file_transfer_time_output,queue_time,resource,current_edge):
+    def get_energry(self,process_time,file_transfer_time_input,file_transfer_time_output,idle_resource_time,resource,current_edge):
         resource_transfer=0
         device_transfer=0
         active=0
@@ -99,7 +98,7 @@ class Execut:
         resource_transfer=(file_transfer_time_input*resource['down_energy'])+(file_transfer_time_output*resource['up_energy'])
         device_transfer=(file_transfer_time_input*current_edge['up_energy'])+(file_transfer_time_output*current_edge['down_energy'])
         active=(resource["con_pow_active"]*process_time/1000)+resource_transfer
-        idle=queue_time * float(resource["con_pow_idle"]/1000)
+        idle=idle_resource_time * float(resource["con_pow_idle"]/1000)
         total_energy=active+idle
         return total_energy,active,idle,device_transfer
                 

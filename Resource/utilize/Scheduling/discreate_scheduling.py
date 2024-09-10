@@ -2,7 +2,7 @@ from utilize.Algorithms.pso import PSO
 from utilize.Algorithms.random import Random
 from utilize.Execution.execut import Execut
 import numpy as np
-
+from threading import *
 
 def specific_resource(id,resource,edge,job):
     current_res=0
@@ -145,18 +145,21 @@ def scheduling(ue_zone,Job_list,Resource_list):
     del Rand
     return scheduled_list
 
-def exec(Job_list,current_flags,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags):
+def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj):
     EX=Execut()
     while len(Job_list)>0:
         # print(f"inter time: {inter_time}")
         # print(f"current time {current_times}")
-        if current_flags==0:
+        if flags[index]==0:
             break    
-        if len(inter_time)>0:
-            if current_times>=inter_time[0]:
-                inter_time.pop(0)
-                for i in range(len(flags)): flags[i]=0
-                break
+        with obj:
+            if len(inter_time)>0:
+                # print (current_times[index]," ---------------- ", inter_time[0]," ------------ ",index)
+                if current_times[index]>= inter_time[0]:
+                    inter_time.pop(0)
+                    for i in range(len(flags)): flags[i]=0
+                    break
+     
         index_task=select_task(list_task,Job_list)
         current_edge=ue_zone[Job_list[0][0]+1]['specif']
         
@@ -164,7 +167,7 @@ def exec(Job_list,current_flags,inter_time,list_task,ue_zone,scheduled_list,Reso
         Det_time_inter(list_task[index_task][1],Job_list,ue_zone)
         current_resource=specific_resource(scheduled_list[0],Resource_list,ue_zone,Job_list[0])
             #print (list_task[index_task][1])
-        current_times=EX.run(list_task[index_task][1],current_edge,current_resource,current_times)
+        current_times[index]=EX.run(index,list_task[index_task][1],current_edge,current_resource,current_times)
         Job_list.pop(0)
         scheduled_list.pop(0)
     del EX
@@ -173,16 +176,16 @@ def exec(Job_list,current_flags,inter_time,list_task,ue_zone,scheduled_list,Reso
         2.یک بخش برای رکورد مرحله به مرحله دیوایس ها در یک فایل سی اس وی یا هرچیز دیگه ای ذخیره کنه
         3. همین دیگه
         """       
-def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_times,inter_time,flags,add_ue,new_device=[]):
-    #print(f"initialize fog zone: {index}")
+def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_times,inter_time,flags,add_ue,obj,new_device=[]):  
     if add_ue[index]==-1:
+        # print(add_ue)
+        # print(f"initialize fog zone: {index}       {current_times}")
         list_task=list_task[index]
         """list of all job of all zone"""
         Job_list=Job_list[index]
         current_fog_zone=zones[index]
-        current_times=current_times[index]
+        #current_times=current_times[index]
         scheduled_list=scheduled_list[index]
-        current_flags=flags[index]
         #this function specifies a list of all resource in each fog zone
         Resource_list=provisioned_resources_list(current_fog_zone,clouds)
         #return a list in the form of [[device_id,task_id]]
@@ -190,29 +193,27 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         #return a list in the form of [[device_id,task_id]] that selected task in order from each device
         job_list_task(ue_zone,Job_list)
         scheduled_list.extend(scheduling(ue_zone,Job_list,Resource_list))
-        exec(Job_list,current_flags,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags)    
+        exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj)    
     elif add_ue[index]==0:
-        #print(f"conitinious fog zone : {index}")
+        # print(add_ue)
+        # print(f"conitinious fog zone : {index}                {current_times}")
         list_task=list_task[index]
         """list of all job of all zone"""
         Job_list=Job_list[index]
         current_fog_zone=zones[index]
-        current_times=current_times[index]
         scheduled_list=scheduled_list[index]
-        current_flags=flags[index]
         #this function specifies a list of all resource in each fog zone
         Resource_list=provisioned_resources_list(current_fog_zone,clouds)
-        exec(Job_list,current_flags,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags)
+        exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj)
     elif add_ue[index]==1:
-        #print(f"add decvice to fog zone : {index}")
+        # print(add_ue)
+        # print(f"add decvice to fog zone : {index}                  {current_times}")
         ue_zone.append(new_device)
         list_task=list_task[index]
         """list of all job of all zone"""
         Job_list=Job_list[index]
         current_fog_zone=zones[index]
-        current_times=current_times[index]
         scheduled_list=scheduled_list[index]
-        current_flags=flags[index]
         temp_list_task=temp_task_list(new_device)
         temp_joblist=temp_job_list_task(new_device)
         Resource_list=provisioned_resources_list(current_fog_zone,clouds)
@@ -221,4 +222,4 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         list_task.extend(temp_list_task)
         scheduled_list.extend(temp_scheduled_list)
         #this function specifies a list of all resource in each fog zone  
-        exec(Job_list,current_flags,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags) 
+        exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj) 
