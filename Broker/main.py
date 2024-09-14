@@ -6,11 +6,13 @@ import time
 import pickle
 from utilize.send_message import send_message
 from utilize.algorithm.UE_FOG_assign import algorithm as A_alorithm
+from utilize.algorithm.Assign_new_device import Algorithm as new_device_algorithm
 number_zone=0
 flag_zone=[] #this flag be used for each resource zone and specific interupt
 threads_zone=[]
 current_time=0
 inter_time=[]
+flag_sever=1
 def intial_scheduling(Data):
     global threads_zone,number_zone, flag_zone, current_time,inter_time
     number_zone=Data["number_zone"]
@@ -20,9 +22,8 @@ def intial_scheduling(Data):
     response=send_message('127.0.0.1',3,{"request":"connection","numbers_zone":number_zone,"flags":flag_zone,"inter_time":inter_time,"data":Data["data"]})
     response=A_alorithm(Data["data"],response)
     #response=send_message('127.0.0.1',3,{"request":"scheduling","time":current_time,"data":Data["data"]})
-    return response    
-    
-    
+    return response   
+ 
 def interrupt(Data):
     pass
                 
@@ -44,6 +45,20 @@ def get_ue_zone(Data):
     response=send_message('127.0.0.1',3,{"request":"get_ue_zones","data":Data})
     return response
 
+def close_program():
+    global flag_sever
+    flag_sever=0
+    return 1
+
+
+def assign_new_device(data):
+    fog_zones,clouds=send_message('127.0.0.1',3,{"request":"fog_zones_stattus","data":data})
+    Algorithm=new_device_algorithm()
+    zone_id=Algorithm.random_time(0,data["number_zone"]-1)
+    return zone_id
+    
+
+
 def detect_message(Data):
     
     if Data['request']=="intial_scheduling":
@@ -58,7 +73,10 @@ def detect_message(Data):
         return get_ue_zone(Data)
     elif Data['request']=="none":
         pass
-        
+    elif Data['request']=="assign_new_device":
+        return assign_new_device(Data)
+    elif Data['request']=="close_program":
+        return close_program()
 
 def handle_client(client_socket, address):
     CHUNK_SIZE=8192
@@ -158,6 +176,7 @@ def handle_client(client_socket, address):
 
 
 def server():
+    global flag_sever
     host = '127.0.0.1'
     port = 1
     
@@ -167,11 +186,11 @@ def server():
     
     print(f"Server  \"Broker\" listening on {host}:{port}")
     
-    while True:
+    while flag_sever:
         client_socket, address = server_socket.accept()
         client_thread = threading.Thread(target=handle_client, args=(client_socket, address))
         client_thread.start()
-
+    server_socket.close()
 
 
 

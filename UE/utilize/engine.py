@@ -13,15 +13,17 @@ class UE_Egine:
     number_zone=0
     dynamic=0
     distribution=None
-    N_A_D=0#numbers of devices that will add to environment
+    N_A_D=4#numbers of devices that will add to environment
     inter_time=[] #times of inter each task to fog environment
     zones=0
-    
+    rep_number=1
+    total_calculation=[]
+    total_zones=[]
     def __init__(self,run_type="discreate") -> None:
         self.run_type=run_type
         
         if self.run_type=="discreate":
-            self.discreate_time()
+            self.discreate_time()       
         else:
             self.real_time()    
     
@@ -30,7 +32,13 @@ class UE_Egine:
     def real_time(self):
         print("real time simulation")
         
-
+    def reset(self):
+        self.number_zone=0
+        self.dynamic=0
+        self.distribution=None
+        self.N_A_D=0#numbers of devices that will add to environment
+        self.inter_time=[] #times of inter each task to fog environment
+        self.zones=0
     
     def discreate_time(self):
         start_time=time.time()
@@ -58,9 +66,10 @@ class UE_Egine:
         """
         if response["flags"]:
             i=0
-            Algorithm=Algorithms()
+            #Algorithm=Algorithms()
             while response["flags"] and self.N_A_D>=0:
-                    zone_id=Algorithm.random(0,self.number_zone-1) #selecting appropirate zone for new ue
+                    zone_id=send_message('127.0.0.1',1,{"request":"assign_new_device","number_zone":self.number_zone,"data":self.zones})    
+                    #zone_id=Algorithm.random(0,self.number_zone-1) #selecting appropirate zone for new ue
                     new_device=ue_zone.add_ue(zone_id,self.inter_time[i]) # add new ue to be selected ue-zone
                     self.zones=ue_zone.get_ue_zone()
                     #print(zone_id,"         ",self.inter_time[i])
@@ -76,14 +85,16 @@ class UE_Egine:
         #print("finally")    
         #print(send_message('127.0.0.1',1,{"request":"get_ue_zons"}) )    
         self.zones=send_message('127.0.0.1',3,{"request":"get_ue_zones","data":self.zones})
-        fog_zones,clouds=send_message('127.0.0.1',3,{"request":"fog_zones_stattus","data":self.zones})
         ue_zone.set_uezone(self.zones)  
-        total_calculation=send_message('127.0.0.1',3,{"request":"total_calculation",'data':self.zones})
-        output=Excel()
-        output.calculation_zone(total_calculation,total_time)
+        self.total_calculation=send_message('127.0.0.1',3,{"request":"total_calculation",'data':self.zones})
+       # output.calculation_zone(total_calculation,total_time)
+        send_message('127.0.0.1',1,{"request":"close_program",'data':self.zones})
+        send_message('127.0.0.1',3,{"request":"close_program",'data':self.zones})
+        send_message('127.0.0.1',1,{"request":"close_program",'data':self.zones})
+        send_message('127.0.0.1',3,{"request":"close_program",'data':self.zones})   
+        output=Excel()        
         output.workflow(self.zones)
-        print
-        #output.calculation_zone(total_calculation)
+        output.calculation_zone(self.total_calculation,total_time)
         # Print table
         # print(tabulate(my_data, headers=head, tablefmt="grid"))
 

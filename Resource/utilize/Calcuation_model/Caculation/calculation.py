@@ -22,7 +22,7 @@ class Calculation:
            total_cost+=fog[X]["total_cost"]
            if makespan< fog[X]["time"]:
                makespan=fog[X]["time"]
-           if total_makespan <makespan< fog[X]["time"]:
+           if total_makespan <fog[X]["time"]:
                total_makespan=fog[X]["time"]
         for X in cloud:
             total_energy+=X["idle_energy"]

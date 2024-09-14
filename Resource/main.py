@@ -23,10 +23,7 @@ ue_zone=[]
 job_list=[]
 add_ue=[]
 obj=0
-def create_ue():
-    pass
-
-
+flag_srver=1
 
 def connection(Data):
     global current_times,flags,inter_time,number_zone,Fog_b,zones,scheduled_list,task_list,clouds,job_list,add_ue,obj
@@ -68,7 +65,6 @@ def scheduling(Data):
     if flags[0]==0:
         response={"data":0,"flags":1} 
         return response
-    print(current_times)
     response={"data":ue_zone,"flags":0}   
     return response
 def scheduling_add_ue(Data):
@@ -96,7 +92,6 @@ def scheduling_add_ue(Data):
         threads[i].join()
     if flags[0]==0:
         response={"data":0,"flags":1} 
-        
         return response
     response={"data":ue_zone,"flags":0} 
     #print(ue_zone)
@@ -125,6 +120,11 @@ def total_calculation():
     
     return total_result
 
+def close_program():
+    global flag_srver
+    flag_srver=0
+    return 1
+
 def detect_message(Data):
     if Data['request']=="connection":
         return connection(Data)
@@ -138,7 +138,8 @@ def detect_message(Data):
         return fog_zones_status()
     elif Data['request']=="total_calculation":
         return total_calculation()
-        
+    elif Data['request']=="close_program":
+        return close_program()    
 def handle_client(client_socket, address):
     CHUNK_SIZE=8192
     print(f"Accepted connection from {address}")
@@ -210,6 +211,7 @@ def handle_client(client_socket, address):
     client_socket.close()
     print(f"Connection with {address} closed")
 def server():
+    global flag_srver
     host = '127.0.0.1'
     port = 3
     
@@ -219,11 +221,11 @@ def server():
     
     print(f"Server  \"Resource\" listening on {host}:{port}")
     
-    while True:
+    while flag_srver:
         client_socket, address = server_socket.accept()
         client_thread = threading.Thread(target=handle_client, args=(client_socket, address))
         client_thread.start()
-
+    server_socket.close()
 
 server()  
 

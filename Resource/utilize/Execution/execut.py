@@ -40,7 +40,7 @@ class Execut:
         active,resource_transfer_cost,device_transfer_cost=self.get_cost(process_time,file_transfer_time_input,file_transfer_time_output,resource,current_edge)
         
         """this section set attributes of execution in resource and task"""
-        task["time"]=start_time+process_time+file_transfer_time_output
+        task["time"]=start_time+process_time+file_transfer_time_output+file_transfer_time_input
         task["start_time"]=start_time
         task["time_queue"]=queue_time 
         task["makespan"]=makespan
