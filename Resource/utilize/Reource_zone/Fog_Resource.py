@@ -25,7 +25,7 @@ class Fog:
             # the first index is id of the broker
             fog_devic_list = [{'id': id}]
             # number of the devices in a FOG zone
-            enter_numb =1#input("number of fog in fog zone:")
+            enter_numb =10#input("number of fog in fog zone:")
             for count_numb in range(int(enter_numb)):
                 fog = self.fog(id, count_numb)
                 fog_devic_list.append(fog)

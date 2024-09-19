@@ -20,7 +20,7 @@ class Cloud:
     def create_clouds_device(self):
         fog_devic_list = []  # create a list of the devices
         # number of the devices in a cloud
-        enter_numb =1# input("number of CLoud:")
+        enter_numb =0# input("number of CLoud:")
         for count_numb in range(int(enter_numb)):
             edge = self.clouds(count_numb)
             fog_devic_list.append(edge)
