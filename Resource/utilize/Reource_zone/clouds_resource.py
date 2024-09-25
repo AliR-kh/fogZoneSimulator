@@ -1,3 +1,6 @@
+from utilize.Config import Config
+
+
 class Cloud:
     id = 0
     type_dev = "Cloud"
@@ -18,9 +21,11 @@ class Cloud:
     cost_transfer=.02
     inter_time=0
     def create_clouds_device(self):
+        config=Config()
+        enter_numb=config.get_config("Cloud","number")
         fog_devic_list = []  # create a list of the devices
         # number of the devices in a cloud
-        enter_numb =0# input("number of CLoud:")
+        # input("number of CLoud:")
         for count_numb in range(int(enter_numb)):
             edge = self.clouds(count_numb)
             fog_devic_list.append(edge)

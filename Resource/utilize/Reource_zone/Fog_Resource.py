@@ -1,4 +1,5 @@
 
+from utilize.Config import Config
 class Fog:
     id = 0
     parentid = 0
@@ -20,12 +21,14 @@ class Fog:
     cost_transfer=0.01
     inter_time=0
     def create_fog_device(self, id, alg):
+        config=Config()
+        n_fog_zone=config.get_config("Fog","device_e_zone")
         fog_devic_list = []  # create a list of the devices
         if alg == 1:
             # the first index is id of the broker
             fog_devic_list = [{'id': id}]
             # number of the devices in a FOG zone
-            enter_numb =10#input("number of fog in fog zone:")
+            enter_numb =n_fog_zone#input("number of fog in fog zone:")
             for count_numb in range(int(enter_numb)):
                 fog = self.fog(id, count_numb)
                 fog_devic_list.append(fog)

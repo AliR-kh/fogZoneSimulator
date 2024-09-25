@@ -1,3 +1,5 @@
+
+from utilize.Config import Config
 from utilize.UE_devices.UE_zone import UE_broker
 from utilize.send_message import send_message
 from utilize.distribution import random_time
@@ -21,7 +23,8 @@ class UE_Egine:
     total_zones=[]
     def __init__(self,run_type="discreate") -> None:
         self.run_type=run_type
-        
+        config=Config()
+        self.N_A_D=config.get_config("UE","add_device")
         if self.run_type=="discreate":
             self.discreate_time()       
         else:

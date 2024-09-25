@@ -1,3 +1,5 @@
+
+from utilize.Config import Config
 from utilize.UE_devices.UE_device import Edge
 class UE_broker:
     ue_zone_list = []
@@ -6,9 +8,12 @@ class UE_broker:
     def __init__(self) -> None:
         pass
     def creat_ue_zone(self):
-        numb =5#input("enter number of UE zone:")
+        config=Config()
+        n_ue_zone=config.get_config("UE","zone")
+        n_device_zone=config.get_config("UE","device_e_zone")
+        numb =n_ue_zone#input("enter number of UE zone:")
         for count_zon in range(int(numb)):
-            self.ue_zone_list.append(self.edge.create_edge_devices_z_z(count_zon,2,0))
+            self.ue_zone_list.append(self.edge.create_edge_devices_z_z(count_zon,n_device_zone,0))
         return self.ue_zone_list
     def show_zone(self):
         pass

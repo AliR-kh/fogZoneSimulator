@@ -1,6 +1,7 @@
 from tkinter import filedialog as fd
 from xml.etree import ElementTree as ET
 import os
+from utilize.Config import Config
 
 
 class Task_reader:
@@ -14,8 +15,10 @@ class Task_reader:
         return result
 
     def creat_dag(self,device_id):
+        config=Config()
+        workflow=config.get_config("UE","workflow","string")
         #xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/CyberShake_1000.xml'))
-        xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/Montage_40.xml'))
+        xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/'+workflow+'.xml'))
         #path=os.path("Config/Workflow/Montage_40.xml")
         tree = ET.parse(xml_path)  # باز کردن فایل xml
         listjob = []

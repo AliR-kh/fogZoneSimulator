@@ -140,8 +140,6 @@ def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
     Rand=PSO()
     scheduled_list=Rand.initialize_swarm(Resource_list,Job_list,ue_zone)
-    print(scheduled_list)
-    exit()
   
     #scheduled_list=Rand.schedul(Job_list,ue_zone,Resource_list)
     del Rand
