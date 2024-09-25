@@ -11,12 +11,6 @@ def run_script(script_path):
     process=subprocess.Popen(['start', 'cmd', '/k', 'python', script_path], shell=True)
     process.wait()
   
-
-# # Run the scripts
-# run_script(script1)
-# run_script(script2)
-# run_script(script3)
-
 def start_programs_2_and_3():
     program2 = subprocess.Popen(['python', os.getcwd()+'\\Broker\\main.py'], shell=True)
     program3 = subprocess.Popen(['python', os.getcwd()+'\\Resource\\main.py'], shell=True)
