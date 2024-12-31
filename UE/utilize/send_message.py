@@ -2,6 +2,8 @@ import socket
 import pickle
 import zlib
 import time
+
+# This function plays the role of a server.
 def send_message(address,port,message):
     CHUNK_SIZE = 8192
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -71,54 +73,3 @@ def send_message(address,port,message):
                 break               
         data=pickle.loads(buffer)
         return data
-    
-        
-        
-    # buffer=bytearray()
-    # message_header=s.recv(1024)
-    # message_header=pickle.loads(message_header)
-    # index=message_header["number_chunk"]
-    # #s.send(b"1")
-    # for i in range(index):
-    #     #print(len(buffer))
-    #     message_data=s.recv(1024)
-    #     buffer.extend(message_data)
-    #     #s.send(b"1")
-    # #print(len(buffer))    
-    # data=pickle.loads(buffer)    
-    # return data        
-            
-            
-            
-                 
-        # responce=s.recv(8192)
-        # responce=pickle.loads(responce)
-    
-    
-    
-    
-    
-    #    # Serialize and compress the object
-    # data = pickle.dumps(message, protocol=pickle.HIGHEST_PROTOCOL)
-    # compressed_data = zlib.compress(data)
-    # CHUNK_SIZE = 4096
-
-    # with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    #     s.connect((address, port))
-        
-    #     # Send the compressed data in chunks
-    #     for i in tqdm(range(0, len(compressed_data), CHUNK_SIZE)):
-    #         s.sendall(compressed_data[i:i+CHUNK_SIZE])
-        
-    #     # Receive the response in chunks
-    #     response_buffer = bytearray()
-    #     while True:
-    #         chunk = s.recv(CHUNK_SIZE)
-    #         if not chunk:
-    #             break
-    #         response_buffer.extend(chunk)
-        
-    #     # Decompress and deserialize the response
-    #     decompressed_response = zlib.decompress(response_buffer)
-    #     response_obj = pickle.loads(decompressed_response)
-    #     return response_obj        

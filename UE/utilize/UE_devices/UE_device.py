@@ -2,6 +2,12 @@
 import numpy as np
 from utilize.Task.task_reader import Task_reader
 
+# this class create edge device for each zone with Custom specifications
+# output is a list with following itmse
+# [[{'id': 0, 'assign_resource': 'noun'}, {'id': 0, 'type': 'Edge', 'mips': '', 'parentid': 0, 'workflow': None, 'con_pow_active': '', 'con_pow_idle': 0, 'down_bw': 0, 'down_cost': 0, 'up_bw': 0, 'up_cost': 0, 'memory_cost': 0, 'exist_flag': 0, 'memory_size': 0,time:0}]]
+# out[0:n] contains {} of UE zones, out[x][0] is specification UEzone and out[x][1,n] is specification of device on each zone
+# out[x][1:y][item] contains {'id': 0, 'type': 'Edge', 'mips': '', 'parentid': 0, 'workflow': None, 'con_pow_active': '', 'con_pow_idle': 0, 'down_bw': 0, 'down_cost': 0, 'up_bw': 0, 'up_cost': 0, 'memory_cost': 0, 'exist_flag': 0, 'memory_size': 0 ,'time':0}  which has its own workflow
+
 
 class Edge:
     id = 0
@@ -54,14 +60,8 @@ class Edge:
         
         return result
 
-# output is a list with following itmse
-# [[{'id': 0, 'assign_resource': 'noun'}, {'id': 0, 'type': 'Edge', 'mips': '', 'parentid': 0, 'workflow': None, 'con_pow_active': '', 'con_pow_idle': 0, 'down_bw': 0, 'down_cost': 0, 'up_bw': 0, 'up_cost': 0, 'memory_cost': 0, 'exist_flag': 0, 'memory_size': 0,time:0}]]
-# out[0:n] contains {} of UE zones, out[x][0] is specification UEzone and out[x][1,n] is specification of device on each zone
 
-
-# out[x][1:y][item] contains {'id': 0, 'type': 'Edge', 'mips': '', 'parentid': 0, 'workflow': None, 'con_pow_active': '', 'con_pow_idle': 0, 'down_bw': 0, 'down_cost': 0, 'up_bw': 0, 'up_cost': 0, 'memory_cost': 0, 'exist_flag': 0, 'memory_size': 0 ,'time':0}  which has its own workflow
-
-
+# specification of edge device
 """
 "id": device id
 "type": type of device

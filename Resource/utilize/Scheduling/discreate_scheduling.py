@@ -21,18 +21,15 @@ def Det_time_inter(task,job,edge): #this function return maximum end time betwee
         tmax=task["time"]
         workflow=[]
         for numb2 in range(1,len(edge)):#determine devices in UE zone
-            #print(edge[numb2]['id'],job[0][0])
-            if edge[numb2]['id']==job[0][0]:
+           if edge[numb2]['id']==job[0][0]:
                 workflow=edge[numb2]["workflow"]
         for numb1 in range(len(task["parentid"])):
             for numb2 in range(len(workflow)):
                 if task["parentid"][numb1]==workflow[numb2][0]["id"]:
-                    #print("task id:",task["id"], "   parid:",task["parentid"][numb1],"    task time:" ,task["time"],"   parent id id:",workflow[numb2][0]["id"], "end time paren:",workflow[numb2][0]["time"])
-                    if tmax < workflow[numb2][0]["time"]:
+                   if tmax < workflow[numb2][0]["time"]:
                         tmax=workflow[numb2][0]["time"]
                         task["time"]=workflow[numb2][0]["time"]
-                    #print("parent tassk id: ",workflow[numb2][0]["id"], "parent task time: ",workflow[numb2][0]["time"],"new task time:  ",task["time"],"\n############################################################")                                                                                             
-
+                  
 
 
 def provisioned_resources_list(fog=[],cloud=[]):
@@ -79,7 +76,7 @@ def organiz_task(job):
                         {"id": job[numbjob][0]['id'], "parentid": job[numbjob][0]['parentid']})
 
     return execut_queue                
-"""این تابع یک ترتیب اجرا از از تمام تسک های تمام دیوایس ها ایجاد میکند"""
+"""This function creates an execution order of all tasks on all devices"""
 def job_list_task(edge,job):
     execute_list=[]
     for numb_E in range(1, len(edge)):
@@ -87,12 +84,10 @@ def job_list_task(edge,job):
             edge[numb_E]["workflow"])})
     counter = per = len(execute_list)
     while 1:
-                #job = []
                 counter %= per
                 #this condition job has 2 item ["device_id","task_id"] and functionality this condition is select a job in order
                 if len(execute_list[counter]["task"]) != 0:
                     job.append(([execute_list[counter]["device_id"],execute_list[counter]["task"].pop(0)]))
-                    #np.insert(job,([execute_list[counter]["device_id"],execute_list[counter]["task"].pop(0)]))
                 else:
                     break
                 counter += 1           
@@ -104,17 +99,15 @@ def temp_job_list_task(edge):
             edge["workflow"])})
     counter = per = len(execute_list)
     while 1:
-        #job = []
         counter %= per
         #this condition job has 2 item ["device_id","task_id"] and functionality this condition is select a job in order
         if len(execute_list[counter]["task"]) != 0:
             job_list.append(([execute_list[counter]["device_id"],execute_list[counter]["task"].pop(0)]))
-                    #np.insert(job,([execute_list[counter]["device_id"],execute_list[counter]["task"].pop(0)]))
         else:
             break
         counter += 1 
     return job_list                                          
-"""این تابع ورک فلو تمام تمام دیوایس ها را لیست میکند"""
+"""This workflow function lists all devices"""
 def task_list(edge,list_task):
     device_id=0
     for i in range(1,(len(edge))):
@@ -148,13 +141,10 @@ def scheduling(ue_zone,Job_list,Resource_list):
 def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj):
     EX=Execut()
     while len(Job_list)>0:
-        # print(f"inter time: {inter_time}")
-        # print(f"current time {current_times}")
         if flags[index]==0:
             break    
         with obj:
             if len(inter_time)>0:
-                # print (current_times[index]," ---------------- ", inter_time[0]," ------------ ",index)
                 if current_times[index]>= inter_time[0]:
                     inter_time.pop(0)
                     for i in range(len(flags)): flags[i]=0
@@ -163,28 +153,21 @@ def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_lis
         index_task=select_task(list_task,Job_list)
         current_edge=ue_zone[Job_list[0][0]+1]['specif']
         
-            #print(list_task[index_task][1])
+       
         Det_time_inter(list_task[index_task][1],Job_list,ue_zone)
         current_resource=specific_resource(scheduled_list[0],Resource_list,ue_zone,Job_list[0])
-            #print (list_task[index_task][1])
         current_times[index]=EX.run(index,list_task[index_task][1],current_edge,current_resource,current_times)
         Job_list.pop(0)
         scheduled_list.pop(0)
     del EX
             
-    """این جا یک شرط تایم بذار که اگه تایم بعد از اجرا از زمان تسک ورودی بیشتر شده یک استاپ بزنه و پروتکل های ورود دستگاه را اجرا کنه
-        2.یک بخش برای رکورد مرحله به مرحله دیوایس ها در یک فایل سی اس وی یا هرچیز دیگه ای ذخیره کنه
-        3. همین دیگه
-        """       
+ 
 def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_times,inter_time,flags,add_ue,obj,new_device=[]):  
     if add_ue[index]==-1:
-        # print(add_ue)
-        # print(f"initialize fog zone: {index}       {current_times}")
         list_task=list_task[index]
         """list of all job of all zone"""
         Job_list=Job_list[index]
         current_fog_zone=zones[index]
-        #current_times=current_times[index]
         scheduled_list=scheduled_list[index]
         #this function specifies a list of all resource in each fog zone
         Resource_list=provisioned_resources_list(current_fog_zone,clouds)
@@ -195,8 +178,6 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         scheduled_list.extend(scheduling(ue_zone,Job_list,Resource_list))
         exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj)    
     elif add_ue[index]==0:
-        # print(add_ue)
-        # print(f"conitinious fog zone : {index}                {current_times}")
         list_task=list_task[index]
         """list of all job of all zone"""
         Job_list=Job_list[index]
@@ -206,8 +187,6 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         Resource_list=provisioned_resources_list(current_fog_zone,clouds)
         exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj)
     elif add_ue[index]==1:
-        # print(add_ue)
-        # print(f"add decvice to fog zone : {index}                  {current_times}")
         ue_zone.append(new_device)
         list_task=list_task[index]
         """list of all job of all zone"""

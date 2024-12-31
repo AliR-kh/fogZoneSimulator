@@ -1,6 +1,9 @@
 
 from utilize.Config import Config
 from utilize.UE_devices.UE_device import Edge
+
+# this class for create Ue Zones, delete Ue Zone, show Ue Zone
+#This class creates an object of the Edge class and uses it to place Edge devices into Ue Zones.
 class UE_broker:
     ue_zone_list = []
     edge = Edge()

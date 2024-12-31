@@ -12,11 +12,6 @@ class Execut:
         memory_cost=0
         memory=0
         idle_resource_time=0
-        # resource['exist_flag'] = 1
-        #print(resource)
-       # print(task["time"]," and  ",resource["time"])
-       
-       
         if float(task["time"])< float(resource["time"]): #this condition achievs start time and idle time for calculates id_energy
             start_time =float(resource["time"])
             queue_time=float(resource["time"])-float(task["time"])
@@ -31,11 +26,8 @@ class Execut:
             file_transfer_time_input=self.Time_trans_f_D_t_R(task["sizein"],resource["down_bw"],current_edge)#the time that task is sent from device to resource
             file_transfer_time_output=self.Time_trans_f_R_t_D(task["sizeout"],resource["up_bw"],current_edge)#the time that result is sent from resource to device
         #
-        #end_time_=start_time+process_time+file_transfer_time_input
+    
         makespan=process_time+file_transfer_time_input#+float(task["time_queue"])
-        #print("task id: ",task["id"],"  end time: ",end_time,"   process time: ",process_time,"    transfer time: ",file_transfer_time, "resource id:{} type:{}".format(resource["id"],resource["type"]))
-        
-        #print("process time: ",makespan,"  finally task time: ",task["time"])
         total_energy,active_energy,idle_energy,device_energy=self.get_energry(process_time,file_transfer_time_input,file_transfer_time_output,idle_resource_time,resource,current_edge)
         active,resource_transfer_cost,device_transfer_cost=self.get_cost(process_time,file_transfer_time_input,file_transfer_time_output,resource,current_edge)
         
@@ -138,7 +130,6 @@ class Execut:
                temp_cloud[resources[result[X]]["id"]]+=self.Time_exec(task[X]["runtime"],resources[result[X]]["mips"])+self.Time_trans(task[X]["sizein"],resources[result[X]]["down_bw"])
                total_cloud+=self.Time_exec(task[X]["runtime"],resources[result[X]]["mips"])+self.Time_trans(task[X]["sizein"],resources[result[X]]["down_bw"])
             if resources[result[X]]["type"]=="Fog":
-               #print(temp_fog[resources[result[X]]["id"]],"              ",self.Time_exec(task[X]["runtime"],resources[result[X]]["mips"])+self.Time_exec(task[X]["sizein"],resources[result[X]]["down_bw"]) )
                temp_fog[resources[result[X]]["id"]]+=self.Time_exec(task[X]["runtime"],resources[result[X]]["mips"])+self.Time_trans(task[X]["sizein"],resources[result[X]]["down_bw"]) 
                total_fog+=self.Time_exec(task[X]["runtime"],resources[result[X]]["mips"])+self.Time_trans(task[X]["sizein"],resources[result[X]]["down_bw"])
         total=0

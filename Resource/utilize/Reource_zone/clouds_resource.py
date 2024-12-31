@@ -1,6 +1,6 @@
 from utilize.Config import Config
 
-
+# this class create cloud device for each zone with Custom specifications
 class Cloud:
     id = 0
     type_dev = "Cloud"
@@ -24,8 +24,7 @@ class Cloud:
         config=Config()
         enter_numb=config.get_config("Cloud","number")
         fog_devic_list = []  # create a list of the devices
-        # number of the devices in a cloud
-        # input("number of CLoud:")
+
         for count_numb in range(int(enter_numb)):
             edge = self.clouds(count_numb)
             fog_devic_list.append(edge)
@@ -33,16 +32,14 @@ class Cloud:
 
     def clouds(self, count_num):
         self.id = count_num
-        """ self.mips = input("Enter mips:")
-        self.typeofdev = input("Enter typeofdev:")
-        self.con_pow_active = input("Enter cost active:") """
+
         result = {"id": self.id, "type": self.type_dev,"ratepermipscost":self.ratepermipscost ,"mips": self.mips, "con_pow_active": self.con_pow_active, "con_pow_idle": self.con_pow_idle, "down_bw": self.down_bw,
                   "down_cost": self.down_cost, "up_bw": self.up_bw,"down_energy":self.down_eng, "up_cost": self.up_cost,"up_energy":self.up_eng,"exec_cost":self.task_exec_cost ,"memory_cost_unit": self.memory_cost, "exist_flag": self.exist_flag, "memory_size": self.memory_size,"inter_time":self.inter_time, "time": 0,"idle_energy":0,"active_energy":0,"total_energy":0,"cost_process":0,"cost_transfer":0,"cost_memory":0,"total_cost":0}
         return result
 
 
 
-
+# specification of cloud device
 """
 "id": device id
 "type": type of device

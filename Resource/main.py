@@ -1,4 +1,4 @@
-    
+import sqlite3
 import socket
 import threading
 from threading import *
@@ -25,6 +25,11 @@ add_ue=[]
 obj=0
 flag_srver=1
 
+# this program is resource Server that reiceve request from client, and detect requset and pass request to a function
+
+
+
+# this function for once call when broker request from server fo initial
 def connection(Data):
     global current_times,flags,inter_time,number_zone,Fog_b,zones,scheduled_list,task_list,clouds,job_list,add_ue,obj
     number_zone=Data["numbers_zone"]
@@ -37,16 +42,17 @@ def connection(Data):
         current_times.append(0)
     flags=Data["flags"]
     inter_time=Data["inter_time"]
+    # create fog zone and cloud based on number of Ue zone
     Fog_b=Fog_broker(number_zone)
     Clouds=Cloud()
-    clouds=Clouds.create_clouds_device()
+    clouds=[]#Clouds.create_clouds_device()
     zones=Fog_b.createfog()
     obj=threading.Lock()
     response=zones#f"fog-zones is intialized.\n there are {number_zone} zone in environment"
     return  response
 
     
-
+# For the first time that Ue environment send request for execut task, call this function
 def scheduling(Data):
     global current_times,flags,inter_time,number_zone,Fog_b,zones,scheduled_list,task_list,ue_zone,clouds,job_list,task_list,add_ue,obj
     index=0
@@ -67,6 +73,8 @@ def scheduling(Data):
         return response
     response={"data":ue_zone,"flags":0}   
     return response
+
+# when a new edge joined to ue environment for execut task, call this function
 def scheduling_add_ue(Data):
     global current_times,flags,inter_time,number_zone,Fog_b,zones,scheduled_list,task_list,ue_zone,clouds,job_list,task_list,add_ue,obj
     zone_id=Data["zone_id"]
@@ -93,9 +101,7 @@ def scheduling_add_ue(Data):
     if flags[0]==0:
         response={"data":0,"flags":1} 
         return response
-    response={"data":ue_zone,"flags":0} 
-    #print(ue_zone)
-    
+    response={"data":ue_zone,"flags":0}     
     return response
     
 
@@ -125,6 +131,7 @@ def close_program():
     flag_srver=0
     return 1
 
+# after give request and decode this, this function detect request
 def detect_message(Data):
     if Data['request']=="connection":
         return connection(Data)
@@ -140,6 +147,8 @@ def detect_message(Data):
         return total_calculation()
     elif Data['request']=="close_program":
         return close_program()    
+    
+
 def handle_client(client_socket, address):
     CHUNK_SIZE=8192
     print(f"Accepted connection from {address}")
@@ -191,8 +200,6 @@ def handle_client(client_socket, address):
         header={"number_chunk":index,"last_chunk":last_chunk}
         header=pickle.dumps(header)
         client_socket.sendall(header)
-            #response = s.recv(8)
-            #print(response)
         i=0
         while True:
             client_socket.sendall(responce[min_chunk:max_chunk])
@@ -210,6 +217,8 @@ def handle_client(client_socket, address):
                     break 
     client_socket.close()
     print(f"Connection with {address} closed")
+    
+# this is server and is running all time and give request
 def server():
     global flag_srver
     host = '127.0.0.1'
