@@ -144,22 +144,12 @@ def set_task():
     pass           
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
-    sch=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
-    scheduled_list=sch.scheduling()
-    # print(result)  
-    # print(f"acllocation list is\n {sch.allocation_list}")
-    # print(f"edge list is\n {sch.edges_list}")
-    # print(f"fog list is\n {sch.fogs_list}")
-    # print(f"cloud list is\n {sch.cloud_list}")
-    # scheduled_list=sch.schedul(joblist=Job_list,resource=Resource_list)
-    # Rand=Engine(Resource_list,{"jobs":Job_list,"edges":ue_zone})
-    # print(Rand.resources.get_current_status())
-    # print(Rand.tasks.get_current_status())
-    
-    # scheduled_list=Rand.initialize_swarm(Resource_list,Job_list,ue_zone)
-  
-    #scheduled_list=Rand.schedul(Job_list,ue_zone,Resource_list)
-    # del Rand
+    # Cls=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
+    # scheduled_list=Cls.scheduling()
+    Cls=PSO()
+    scheduled_list=Cls.run(Resource_list,Job_list,ue_zone)
+    print(scheduled_list)
+    del Cls
     return scheduled_list
 
 def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj):

@@ -24,11 +24,6 @@ class PSO:
         swarm = []
         gbest = None
         gbest_fitness = float('-inf')
-
-        print(resources)
-        print(jobs)
-        print(edges)
-        
         for _ in range(self.particle_count):
             position = [random.randint(0, len(resources) - 1) for _ in range(len(jobs))]
             velocity = [random.uniform(0.0, 1.0) for _ in range(len(jobs))]
@@ -41,7 +36,7 @@ class PSO:
 
             swarm.append((position, velocity, pbest, pbest_fitness))
 
-        return gbest
+        return gbest,swarm
 
     def update_swarm(self, swarm, gbest, gbest_fitness, resources, jobs, edges):
         for x in range(len(swarm)):
@@ -72,9 +67,19 @@ class PSO:
         for _ in range(self.iterations):
             gbest, _ = self.update_swarm(swarm, gbest, self.fitness(gbest, jobs, edges, resources), resources, jobs, edges)
 
-        return gbest
+        return self.prepare_result(gbest,resources,jobs)
     
     
+    
+    def prepare_result(self,gbest,resources,jobs):
+        finall_result = []
+        vmnumb=len(resources)-1
+        for i in range(len(jobs)):
+            if gbest[i] == vmnumb:
+                finall_result.append({"type":"Edge","id":jobs[i][0]})
+            else:
+                finall_result.append({"type":resources[gbest[i]]["type"],"id":resources[gbest[i]]["id"]})
+        return finall_result
     def fitness(self,position,job,edge,resources):
         result=0
         vm=[]
