@@ -1,0 +1,7 @@
+{
+        "min_mips": 1000,
+        "max_mips": 10000,
+        "min_data_size": 500,
+        "max_data_size": 5000,
+        "number_of_task": 200
+}

@@ -12,6 +12,7 @@ class Execut:
         memory_cost=0
         memory=0
         idle_resource_time=0
+        # print(f"Type R :{resource["type"]} with id :{resource["id"]} and time is :{resource["time"]}")
         if float(task["time"])< float(resource["time"]): #this condition achievs start time and idle time for calculates id_energy
             start_time =float(resource["time"])
             queue_time=float(resource["time"])-float(task["time"])

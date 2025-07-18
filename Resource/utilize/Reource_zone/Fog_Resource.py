@@ -47,7 +47,7 @@ class Fog:
             self.parentid = "Noun"
         self.id = count_num
         result = {"id": self.id, "type": self.type_dev, "mips": self.mips,"ratepermipscost":self.ratepermipscost, "parentid": self.parentid, "con_pow_active": self.con_pow_active, "con_pow_idle": self.con_pow_idle, "down_bw": self.down_bw,
-                  "down_cost": self.down_cost,"down_energy":self.down_eng, "up_bw": self.up_bw, "up_cost": self.up_cost,"up_energy":self.up_eng, "memory_cost_unit": self.memory_cost, "exist_flag": self.exist_flag,"exec_cost":self.task_exec_cost,"inter_time":self.inter_time, "memory_size": self.memory_size, "time": 0,"idle_energy":0,"active_energy":0,"total_energy":0,"cost_process":0,"cost_transfer":0,"cost_memory":0,"total_cost":0 }
+                  "down_cost": self.down_cost,"down_energy":self.down_eng, "up_bw": self.up_bw, "up_cost": self.up_cost,"up_energy":self.up_eng, "memory_cost_unit": self.memory_cost, "exist_flag": self.exist_flag,"exec_cost":self.task_exec_cost,"inter_time":self.inter_time, "memory_size": self.memory_size, "time": 0,"idle_energy":0,"active_energy":0,"total_energy":0,"cost_process":0,"cost_transfer":0,"cost_memory":0,"total_cost":0,"assigned_mips":0}
         return result
 # specification of edge device
 """

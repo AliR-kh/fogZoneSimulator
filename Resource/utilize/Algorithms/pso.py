@@ -25,6 +25,10 @@ class PSO:
         gbest = None
         gbest_fitness = float('-inf')
 
+        print(resources)
+        print(jobs)
+        print(edges)
+        
         for _ in range(self.particle_count):
             position = [random.randint(0, len(resources) - 1) for _ in range(len(jobs))]
             velocity = [random.uniform(0.0, 1.0) for _ in range(len(jobs))]

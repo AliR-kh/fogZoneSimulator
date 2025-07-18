@@ -1,20 +1,29 @@
 from utilize.Algorithms.pso import PSO
 from utilize.Algorithms.random import Random
 from utilize.Execution.execut import Execut
+from utilize.Algorithms.DRL.main import Run
 import numpy as np
 from threading import *
-
-def specific_resource(id,resource,edge,job):
-    current_res=0
-    length=len(resource)
-    if id==length-1:
-        for i in range(1,len(edge)):
-            if edge[i]["id"]==job[0]:
-                current_res=edge[i]["specif"]
-    else:
-        current_res=resource[id]
+# from utilize.Algorithms.DQN.Env.engine import Engine
+def specific_resource(scheduled,resources,edge,job):
+    """
+    id={"type":x , "id":y}
+    """
+    
+    
+    for resource in resources:
+        if resource["type"]==scheduled["type"] and resource["id"]==scheduled["id"]:
+            return resource
+    # current_res=0
+    # length=len(resource)
+    # if id==length-1:
+    #     for i in range(len(edge)):
+    #         if edge[i]["id"]==job[0]:
+    #             current_res=edge[i]["specif"]
+    # else:
+    #     current_res=resource[id]
         
-    return current_res                
+    # return current_res                
     
 
 def Det_time_inter(task,job,edge): #this function return maximum end time between parents of task 
@@ -32,7 +41,9 @@ def Det_time_inter(task,job,edge): #this function return maximum end time betwee
                   
 
 
-def provisioned_resources_list(fog=[],cloud=[]):
+def provisioned_resources_list(fog=[],cloud=[],ue_zones=[]):
+        # print(ue_zones)
+        test=[]
         resource_list=[]
         if fog!=[]:
             for numb1 in range(1,len(fog)):
@@ -40,7 +51,9 @@ def provisioned_resources_list(fog=[],cloud=[]):
         if cloud!=[]:
             for numb1 in range(len(cloud)):
                 resource_list.append(cloud[numb1])
-        resource_list.append(0)  
+        resource_list+=[edge["specif"] for edge in ue_zones[1:]]
+
+        # resource_list.append(0)  
         return resource_list          
 #this function list tasks in each workflow according to dependency between them 
 def organiz_task(job):
@@ -131,15 +144,24 @@ def set_task():
     pass           
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
-    Rand=PSO()
-    scheduled_list=Rand.initialize_swarm(Resource_list,Job_list,ue_zone)
+    sch=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
+    # scheduled_list=sch.schedul(joblist=Job_list,resource=Resource_list)
+    # Rand=Engine(Resource_list,{"jobs":Job_list,"edges":ue_zone})
+    # print(Rand.resources.get_current_status())
+    # print(Rand.tasks.get_current_status())
+    
+    # scheduled_list=Rand.initialize_swarm(Resource_list,Job_list,ue_zone)
   
     #scheduled_list=Rand.schedul(Job_list,ue_zone,Resource_list)
-    del Rand
+    # del Rand
     return scheduled_list
 
 def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj):
     EX=Execut()
+    # print(ue_zone)
+    list_task[0][1]["makespan"]=1000
+    # print(ue_zone[1]["workflow"][0][0]["makespan"])
+    
     while len(Job_list)>0:
         if flags[index]==0:
             break    
@@ -152,13 +174,14 @@ def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_lis
      
         index_task=select_task(list_task,Job_list)
         current_edge=ue_zone[Job_list[0][0]+1]['specif']
-        
-       
         Det_time_inter(list_task[index_task][1],Job_list,ue_zone)
+        # print(scheduled_list)
         current_resource=specific_resource(scheduled_list[0],Resource_list,ue_zone,Job_list[0])
         current_times[index]=EX.run(index,list_task[index_task][1],current_edge,current_resource,current_times)
         Job_list.pop(0)
         scheduled_list.pop(0)
+        # print(counter)
+        # counter-=1
     del EX
             
  
@@ -170,7 +193,7 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         current_fog_zone=zones[index]
         scheduled_list=scheduled_list[index]
         #this function specifies a list of all resource in each fog zone
-        Resource_list=provisioned_resources_list(current_fog_zone,clouds)
+        Resource_list=provisioned_resources_list(current_fog_zone,clouds,ue_zone)
         #return a list in the form of [[device_id,task_id]]
         task_list(ue_zone,list_task)
         #return a list in the form of [[device_id,task_id]] that selected task in order from each device
@@ -184,7 +207,7 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         current_fog_zone=zones[index]
         scheduled_list=scheduled_list[index]
         #this function specifies a list of all resource in each fog zone
-        Resource_list=provisioned_resources_list(current_fog_zone,clouds)
+        Resource_list=provisioned_resources_list(current_fog_zone,clouds,ue_zone)
         exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj)
     elif add_ue[index]==1:
         ue_zone.append(new_device)
@@ -195,7 +218,7 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         scheduled_list=scheduled_list[index]
         temp_list_task=temp_task_list(new_device)
         temp_joblist=temp_job_list_task(new_device)
-        Resource_list=provisioned_resources_list(current_fog_zone,clouds)
+        Resource_list=provisioned_resources_list(current_fog_zone,clouds,ue_zone)
         temp_scheduled_list=scheduling(ue_zone,temp_joblist,Resource_list)
         Job_list.extend(temp_joblist)
         list_task.extend(temp_list_task)
