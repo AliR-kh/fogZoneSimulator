@@ -145,6 +145,12 @@ def set_task():
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
     sch=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
+    sch.allocation_test()
+    sch.scheduling()  
+    # print(f"acllocation list is\n {sch.allocation_list}")
+    # print(f"edge list is\n {sch.edges_list}")
+    # print(f"fog list is\n {sch.fogs_list}")
+    # print(f"cloud list is\n {sch.cloud_list}")
     # scheduled_list=sch.schedul(joblist=Job_list,resource=Resource_list)
     # Rand=Engine(Resource_list,{"jobs":Job_list,"edges":ue_zone})
     # print(Rand.resources.get_current_status())
