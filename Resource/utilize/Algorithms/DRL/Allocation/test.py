@@ -134,7 +134,7 @@ class RunTest():
 
 
     def schedule_tasks_with_model(self):
-        env_instance=Env(resources=resources,tasks=tasks)
+        env_instance=Env(resources=self.resources,tasks=self.tasks)
         env_instance.reset()
         action_sequence = []
         

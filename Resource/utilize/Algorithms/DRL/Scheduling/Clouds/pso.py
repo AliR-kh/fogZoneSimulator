@@ -68,7 +68,7 @@ class PSO:
         for _ in range(self.iterations):
             gbest, _ = self.update_swarm(swarm, gbest, self.fitness(gbest))
 
-        print(gbest)
+        # print(gbest)
         return gbest
      
     def fitness(self,position):

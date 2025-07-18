@@ -145,8 +145,8 @@ def set_task():
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
     sch=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
-    sch.allocation_test()
-    sch.scheduling()  
+    scheduled_list=sch.scheduling()
+    # print(result)  
     # print(f"acllocation list is\n {sch.allocation_list}")
     # print(f"edge list is\n {sch.edges_list}")
     # print(f"fog list is\n {sch.fogs_list}")
