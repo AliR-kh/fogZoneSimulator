@@ -144,12 +144,16 @@ def set_task():
     pass           
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
-    # Cls=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
-    # scheduled_list=Cls.scheduling()
-    Cls=PSO()
-    scheduled_list=Cls.run(Resource_list,Job_list,ue_zone)
-    print(scheduled_list)
-    del Cls
+    if False:
+        Cls=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
+        scheduled_list=Cls.scheduling()
+        del Cls
+    else:
+        Cls=PSO()
+        scheduled_list=Cls.run(Resource_list,Job_list,ue_zone)
+        
+        
+    
     return scheduled_list
 
 def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj):

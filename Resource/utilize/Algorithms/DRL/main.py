@@ -2,7 +2,8 @@ from copy import deepcopy
 # from utilize.Algorithms.DRL.Allocation.env import Env
 from utilize.Algorithms.DRL.Allocation.test import RunTest
 from utilize.Algorithms.DRL.Scheduling.Clouds.pso import PSO
-from utilize.Algorithms.DRL.Scheduling.Fogs.dqn_scheduing import RunFogScheduling
+from utilize.Algorithms.DRL.Scheduling.Fogs.dqn_scheduing import RunFogScheduling_DQN
+from utilize.Algorithms.DRL.Scheduling.Fogs.ppo_scheduing import RunFogScheduling_PPO
 from utilize.Algorithms.DRL.Scheduling.Fogs.test import RunTest as FogRunTest
 import numpy as np
 class Run():
@@ -49,20 +50,22 @@ class Run():
     
     
     def _fog_schduling_train(self):
-        rtx=RunFogScheduling(resources=self.fogs_resources,tasks=self.fogs_list)
-        rtx.train()
-        
+        self._allocation_test()
+        self.rtx=RunFogScheduling_PPO(resources=self.fogs_resources,tasks=self.fogs_list)
+        self.rtx.run()
     def _cloud_scheduling_test(self):
         cloud_scheduling=PSO(self.cloud_list,self.clouds_resources)
         self.cloud_scheduling_list=cloud_scheduling.run()
     
     def _fog_schduling_test(self):
-        test=FogRunTest(self.fogs_list,self.fogs_resources)
-        self.fog_scheduling_list=test.schedule_tasks_with_model()
+        self.rtx=RunFogScheduling_PPO(resources=self.fogs_resources,tasks=self.fogs_list)
+        # test=FogRunTest(self.fogs_list,self.fogs_resources)
+        self.fog_scheduling_list=self.rtx._test()
     def scheduling(self):
         self._allocation_test()
         self._cloud_scheduling_test()
         self._fog_schduling_test()
+        print(self.fog_scheduling_list)
         finall_result = []
         for i in range(len(self.allocation_list)):
             if self.allocation_list[i] == 0:

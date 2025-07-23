@@ -176,6 +176,6 @@ class Engine():
         self.state=np.zeros(5)
         self.temp_state=None
     
-    
+
     def get_number_of_task(self):
         return len(self.tasks)

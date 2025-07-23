@@ -47,17 +47,17 @@ class QNetwork(nn.Module):
         x = F.relu(self.fc3(x))
         return self.fc4(x)
 
-class RunFogScheduling():
+class RunFogScheduling_DQN():
     def __init__(self,resources,tasks):        
         # هایپرپارامترهای DQN
-        self.BATCH_SIZE = 128            # بزرگ‌تر از حالت قبلی برای نمونه‌گیری پایدارتر
+        self.BATCH_SIZE = 512            # بزرگ‌تر از حالت قبلی برای نمونه‌گیری پایدارتر
         self.GAMMA = 0.95                # تنزیل ملایم برای توجه به آینده ولی با تمرکز بر حال
         self.EPS_START = 1.0             # اکتشاف کامل در ابتدا (100٪ اکشن تصادفی)
         self.EPS_END = 0.05              # در پایان 5٪ رفتار تصادفی حفظ میشه
         self.EPS_DECAY = 5000            # آهسته‌تر شدن روند کاهش اکتشاف برای کاهش bias
-        self.TARGET_UPDATE = 500         # به‌روزرسانی مکررتر شبکه هدف برای سازگاری بهتر
-        self.LR = 1e-6                   # نرخ یادگیری معقول برای شبکه کوچک تا متوسط
-        self.NUM_EPISODES = 1000         # اپیزودهای بیشتر برای پوشش بیشتر وضعیت‌ها
+        self.TARGET_UPDATE = 100         # به‌روزرسانی مکررتر شبکه هدف برای سازگاری بهتر
+        self.LR = 1e-7                   # نرخ یادگیری معقول برای شبکه کوچک تا متوسط
+        self.NUM_EPISODES = 2000         # اپیزودهای بیشتر برای پوشش بیشتر وضعیت‌ها
         self.NUM_TASKS = 200              # بسته به اندازه مسئله‌ات خوبه
         self.STATE_SIZE = 5              # فرض بر اینکه 5 ویژگی مهم در state داری
         self.ACTION_SIZE = 5
@@ -68,7 +68,7 @@ class RunFogScheduling():
         self.target_net.load_state_dict(self.policy_net.state_dict())
         self.target_net.eval()
         self.optimizer = optim.Adam(self.policy_net.parameters(), lr=self.LR)
-        self.memory = ReplayBuffer(1000000)
+        self.memory = ReplayBuffer(100000000)
         self.steps_done = 0
         self.env = Engine(resources=resources,tasks=tasks)
     # ==============================================================================
