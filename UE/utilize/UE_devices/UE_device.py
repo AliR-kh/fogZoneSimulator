@@ -18,10 +18,10 @@ class Edge:
     con_pow_active = 200
     con_pow_idle = 50
     down_bw = 1000
-    down_cost = .08
+    down_cost = .15
     down_eng=50
     up_bw = 1000
-    up_cost = .08
+    up_cost = .15
     up_eng=50
     memory_size = 0
     memory_cost = 0

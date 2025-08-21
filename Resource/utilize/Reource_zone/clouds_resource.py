@@ -9,12 +9,12 @@ class Cloud:
     con_pow_active = 700
     con_pow_idle = 400
     task_exec_cost=0.96
-    down_bw = 1000
+    down_bw = 700
     down_eng=50
-    down_cost = .02
-    up_bw = 1000
+    down_cost = .08
+    up_bw = 700
     up_eng=50
-    up_cost = .02
+    up_cost = .8
     memory_size = 0
     memory_cost = 0
     exist_flag = 0

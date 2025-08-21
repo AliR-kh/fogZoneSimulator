@@ -62,7 +62,6 @@ def organiz_task(job):
     for numbjob in range(len(job)+1):
         flag = 1
         counter = 0
-
         if len(spare_list) != 0:
             while (flag):
                 for numbspare in range(len(spare_list)):
@@ -87,10 +86,10 @@ def organiz_task(job):
                 else:
                     spare_list.append(
                         {"id": job[numbjob][0]['id'], "parentid": job[numbjob][0]['parentid']})
-
+    # print(f"in org {len(execut_queue)}")
     return execut_queue                
 """This function creates an execution order of all tasks on all devices"""
-def job_list_task(edge,job):
+def job_list_task(edge,job,list_task):
     execute_list=[]
     for numb_E in range(1, len(edge)):
         execute_list.append({"device_id": edge[numb_E]["id"], "task":organiz_task(
@@ -101,9 +100,10 @@ def job_list_task(edge,job):
                 #this condition job has 2 item ["device_id","task_id"] and functionality this condition is select a job in order
                 if len(execute_list[counter]["task"]) != 0:
                     job.append(([execute_list[counter]["device_id"],execute_list[counter]["task"].pop(0)]))
-                else:
+                if len(list_task)==len(job):
                     break
-                counter += 1           
+                counter += 1
+    
           
 def temp_job_list_task(edge):
     execute_list=[]
@@ -123,10 +123,14 @@ def temp_job_list_task(edge):
 """This workflow function lists all devices"""
 def task_list(edge,list_task):
     device_id=0
+    # print("******************* taaasssdssssskkkkkksssssss*********************************")
     for i in range(1,(len(edge))):
         device_id=edge[i]["id"]
+        print(f"number of device {i} number of task {len(edge[i]["workflow"])}")
         for j in range(len(edge[i]["workflow"])):
-            list_task.append([device_id,edge[i]["workflow"][j][0]])           
+            list_task.append([device_id,edge[i]["workflow"][j][0]])
+            
+    print(f" len of task {len(list_task)}")
 
 def temp_task_list(edge):
     list_task=[]
@@ -144,7 +148,8 @@ def set_task():
     pass           
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
-    if False:
+    print(f"in discreate {len(Job_list)}")
+    if True:
         Cls=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
         scheduled_list=Cls.scheduling()
         del Cls
@@ -175,7 +180,8 @@ def exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_lis
         index_task=select_task(list_task,Job_list)
         current_edge=ue_zone[Job_list[0][0]+1]['specif']
         Det_time_inter(list_task[index_task][1],Job_list,ue_zone)
-        # print(scheduled_list)
+        # 
+        # (scheduled_list)
         current_resource=specific_resource(scheduled_list[0],Resource_list,ue_zone,Job_list[0])
         current_times[index]=EX.run(index,list_task[index_task][1],current_edge,current_resource,current_times)
         Job_list.pop(0)
@@ -197,7 +203,7 @@ def run(index,zones,ue_zone,clouds,scheduled_list,Job_list,list_task,current_tim
         #return a list in the form of [[device_id,task_id]]
         task_list(ue_zone,list_task)
         #return a list in the form of [[device_id,task_id]] that selected task in order from each device
-        job_list_task(ue_zone,Job_list)
+        job_list_task(ue_zone,Job_list,list_task)
         scheduled_list.extend(scheduling(ue_zone,Job_list,Resource_list))
         exec(index,Job_list,inter_time,list_task,ue_zone,scheduled_list,Resource_list,current_times,flags,obj)    
     elif add_ue[index]==0:

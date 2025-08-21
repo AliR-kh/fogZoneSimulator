@@ -8,23 +8,32 @@ import random
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from pathlib import Path
+import csv
 
 # یک ساختمان داده برای ذخیره تجربیات
 # ==================== ابرپارامترها ====================
-GAMMA = 0.99
-# بهترین رویه: لامبدا معمولاً روی 0.95 تنظیم می‌شود تا تعادل بهتری بین بایاس و واریانس برقرار کند.
-LAMBDA = 0.95
-LR = 1e-5
-# K_EPOCHS تعداد دفعاتی است که روی کل داده‌ها آموزش می‌بینیم.
-K_EPOCHS = 4
-EPS_CLIP = 0.2
-# بهترین رویه: بهتر است این عدد بزرگتر باشد (مثلاً 2048) تا تخمین مزیت پایدارتر شود.
-UPDATE_INTERVAL = 200
-NUM_EPISODES = 500
+# ==================== Hyperparameters (Optimized for Task Scheduling) ====================
+
+# (بدون تغییر) ضریب تنزیل برای پاداش‌های آینده
+GAMMA = 0.95
+# (بدون تغییر) پارامتر GAE برای تعادل بایاس و واریانس
+LAMBDA = 0.90
+# (تغییر) نرخ یادگیری کمی بالاتر برای همگرایی سریع‌تر. 3e-4 یک مقدار استاندارد و قوی برای PPO است.
+LR = 5e-5
+# (تغییر) تعداد دوره‌ها را کمی افزایش می‌دهیم تا از هر بچ داده، بیشتر یاد بگیریم.
+K_EPOCHS = 20
+# (بدون تغییر) ضریب برش برای تضمین آپدیت‌های پایدار
+EPS_CLIP = 0.35
+# (مهم‌ترین تغییر) این عدد را به طور قابل توجهی افزایش می‌دهیم تا داده‌های متنوع‌تری از چندین اپیزود جمع‌آوری شود.
+UPDATE_INTERVAL = 1024
+# (بدون تغییر) تعداد کل اپیزودهای آموزش
+NUM_EPISODES = 300
+# (بدون تغییر) این پارامترها مربوط به مشخصات محیط شما هستند.
 STATE_SIZE = 5
 ACTION_SIZE = 5
-# BATCH_SIZE اندازه هر دسته کوچک در هر Epoch است.
-BATCH_SIZE=128
+# NUM_TASKS = 200
+# (بدون تغییر) این اندازه بچ برای بازه آپدیت جدید، مناسب است (2048 / 64 = 32).
+BATCH_SIZE = 64
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class ActorCritic(nn.Module):
@@ -32,17 +41,17 @@ class ActorCritic(nn.Module):
         super().__init__()
         
         self.actor = nn.Sequential(
-            nn.Linear(state_dim, 64),
+            nn.Linear(state_dim, 128),
             nn.ReLU(),
-            nn.Linear(64, 64),
+            nn.Linear(128, 64),
             nn.ReLU(),
             nn.Linear(64, action_dim)
         )
         
         self.critic = nn.Sequential(
-            nn.Linear(state_dim, 64),
+            nn.Linear(state_dim, 128),
             nn.ReLU(),
-            nn.Linear(64, 64),
+            nn.Linear(128, 64),
             nn.ReLU(),
             nn.Linear(64, 1)
         )
@@ -133,6 +142,7 @@ class RunFogScheduling_PPO():
             # محاسبه مزیت با استفاده از فرمول GAE
             advantage = delta + (GAMMA * LAMBDA * advantage * (1 - exp['done']))
             
+            
             # محاسبه بازده (Return) که هدف شبکه منتقد است.
             G_t = advantage + exp['V_t']
             
@@ -174,7 +184,7 @@ class RunFogScheduling_PPO():
                 critic_loss = F.mse_loss(state_values.squeeze(), returns)
                 
                 # زیان کل
-                loss = actor_loss + 0.5 * critic_loss - 0.01 * dist_entropy.mean()
+                loss = actor_loss + 0.5 * critic_loss - 0.05 * dist_entropy.mean()
                 
                 # به‌روزرسانی وزن‌ها
                 self.optimizer.zero_grad()
@@ -193,8 +203,8 @@ class RunFogScheduling_PPO():
     def _explore(self):
         # این متغیر برای کنترل زمان به‌روزرسانی استفاده می‌شود.
         timesteps_collected = 0
-        total_reward=0
         for epoch in tqdm(range(NUM_EPISODES)):
+            total_reward=0
             self.Env.reset()
             for task_index in range(self.Env.get_number_of_task()):
                 timesteps_collected += 1
@@ -257,6 +267,16 @@ class RunFogScheduling_PPO():
         return actions
     
     def _plpt(self):
+        with open("scheduling_loss.csv","w",newline="") as f:
+            writer=csv.writer(f)
+            for value in self.losses:
+                writer.writerow([value])
+                
+        with open("scheduling_reward.csv","w",newline="") as f:
+            writer=csv.writer(f)
+            for value in self.episode_scores:
+                writer.writerow([value])
+        
         plt.figure(figsize=(12, 5))
         plt.subplot(1, 2, 1)
         plt.plot(self.episode_scores, label='Reward')

@@ -2,7 +2,7 @@ from tkinter import filedialog as fd
 from xml.etree import ElementTree as ET
 import os
 from utilize.Config import Config
-
+import random
 # this class for read workflow from a xml file with specifc structure and create a list of workflow fo execute in resource
 # this class specifies the task of each job and dependencies between jobs
 # output is a list that its index 0 is {'id': 'ID00010', 'namespace': 'Montage', 'name': 'mDiffFit', 'version': '1.0', 'runtime': '10.58', 'parentid': ['ID00003', 'ID00001'] , size=5048 ,sizeout=x ,time=0 , 'makespan=0} accordignly we can uses this information and creat queu of execution
@@ -21,7 +21,9 @@ class Task_reader:
 
     def creat_dag(self,device_id):
         config=Config()
-        workflow=config.get_config("UE","workflow","string")
+        # workflow=config.get_config("UE","workflow","string")
+        workflow_list=["Montage_200","Montage_300","Montage_100"]
+        workflow=random.choice(workflow_list)
         xml_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../Config/Workflow/'+workflow+'.xml'))
         tree = ET.parse(xml_path)  # open xml
         listjob = []

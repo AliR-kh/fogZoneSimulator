@@ -10,11 +10,11 @@ class Fog:
     ratepermipscost = 0.48
     con_pow_active = 500
     con_pow_idle = 200
-    down_bw = 1000
-    down_cost = .04
+    down_bw = 900
+    down_cost = .1
     down_eng=50
-    up_bw = 1000
-    up_cost = .04
+    up_bw = 900
+    up_cost = .1
     up_eng=50
     memory_size = 0
     memory_cost = 0

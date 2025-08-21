@@ -57,7 +57,7 @@ class RunFogScheduling_DQN():
         self.EPS_DECAY = 5000            # آهسته‌تر شدن روند کاهش اکتشاف برای کاهش bias
         self.TARGET_UPDATE = 100         # به‌روزرسانی مکررتر شبکه هدف برای سازگاری بهتر
         self.LR = 1e-7                   # نرخ یادگیری معقول برای شبکه کوچک تا متوسط
-        self.NUM_EPISODES = 2000         # اپیزودهای بیشتر برای پوشش بیشتر وضعیت‌ها
+        self.NUM_EPISODES = 500         # اپیزودهای بیشتر برای پوشش بیشتر وضعیت‌ها
         self.NUM_TASKS = 200              # بسته به اندازه مسئله‌ات خوبه
         self.STATE_SIZE = 5              # فرض بر اینکه 5 ویژگی مهم در state داری
         self.ACTION_SIZE = 5
@@ -128,6 +128,9 @@ class RunFogScheduling_DQN():
     # ==============================================================================
     # ۳. حلقه اصلی آموزش
     # ==============================================================================
+
+
+    
 
     def train(self):
         self.episode_scores = []
@@ -215,3 +218,28 @@ class RunFogScheduling_DQN():
         CURRENT_PATH=Path(__file__).resolve().parent
         MODEL_PATH = CURRENT_PATH/'dqn_scheduler_model.pth'
         torch.save(self.policy_net.state_dict(), MODEL_PATH)
+        
+    def _test(self):
+        actions=[]
+        CURRENT_PATH=Path(__file__).resolve().parent
+        MODEL_PATH = CURRENT_PATH/'dqn_scheduler_model.pth' # مسیر فایل ذخیره شده
+        try:
+            self.policy_net.load_state_dict(torch.load(MODEL_PATH))
+            self.policy_net.eval()
+        # print(f"مدل با موفقیت از مسیر '{MODEL_PATH}' بارگذاری شد.")
+        except FileNotFoundError:
+        # print(f"خطا: فایل مدل در مسیر '{MODEL_PATH}' پیدا نشد. لطفاً ابتدا مدل را آموزش و ذخیره کنید.")
+            exit()
+        for task_index in range(self.env.get_number_of_task()):
+            temporary_state = torch.from_numpy(self.env.temporary_state(task_index)).float().to(self.device)  
+                # عمل در محیط با استفاده از شبکه قدیمی (old_policy)
+            with torch.no_grad():
+                action = self.policy_net(temporary_state).argmax().item()
+                # print(action)
+            actions.append(action)
+            _, _, _, done = self.env.step(task_index, action)
+            if done:
+                break
+
+        # print(f"Final test reward is: {actions}")
+        return actions

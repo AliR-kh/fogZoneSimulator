@@ -21,7 +21,6 @@ class Engine():
     def reset(self):
         self.resources=deepcopy(self.static_resources)
         self.tasks=deepcopy(self.static_tasks)
-    
         
     # def _initial_resources(self):
     #     try:
@@ -104,7 +103,7 @@ class Engine():
         
     def execution_cost(self,resource,task):
         task_execution=self.execution_time(resource,task)
-        return task_execution * float(resource["ratepermipscost"])   
+        return task_execution * float(resource["ratepermipscost"])/1000   
         
     def execution_load_balancing(self,resource,task):
         return resource["assigned_mips"]+task["runtime"]
@@ -129,17 +128,28 @@ class Engine():
         # load_balancing_norm=summary_changed["load_balancing"]/self.max_load_balancing_for_norm
         
         # print(f"norm changed ext {execution_time_norm}   and tt {tranfer_time_norm}   makespan {makespan}")
-        # print(f"energy ext {energy_conumption_norm}   and cost {cost_per_second_norm}   load {load_balancing_norm}")
+        # print(f"energy ext {energy_conumption_norm if energy_conumption_norm>1 else None}   and cost {cost_per_second_norm if cost_per_second_norm >1 else None}   makespan {makespan if makespan>1 else None}")
+        # if resource["total_energy"] > self.max_energy_for_norm:
+        #     print(f"*****************\n { resource['total_energy']} > {self.max_energy_for_norm} \n*******************************")
         return (self.w_ms*makespan)+(self.w_ec*energy_conumption_norm)+(self.w_cp*cost_per_second_norm) 
     
     def _reward(self,task_index,resource_index):
         task=self.tasks[task_index]
         resource=self.resources
-        reward=[]
+        makespan_reward=[]
+        energy_reward=[]
+        cost_reward=[]
         for i in range(len(resource)):
-            temp_reward=-(self.execution_time(resource[i],task)+resource[i]["time"])
-            reward.append(temp_reward)
-        return max(reward)/reward[resource_index]
+            makespan_temp_reward=-(self.execution_time(resource[i],task)+self.trancfer_time(resource[i],task)+resource[i]["time"])
+            energy_temp_reward=-(self.energy_consumption(resource[i],task)+resource[i]["time"])
+            cost_temp_reward=-(self.execution_cost(resource[i],task)+resource[i]["time"])
+            makespan_reward.append(makespan_temp_reward)
+            energy_reward.append(energy_temp_reward)
+            cost_reward.append(cost_temp_reward)
+        reward=((self.w_ms*max(makespan_reward)/makespan_reward[resource_index])+(self.w_ec*max(energy_reward)/energy_reward[resource_index])+(self.w_cp*max(cost_reward)/cost_reward[resource_index]))
+        if reward>1:
+            print(f"rewarrrrrdddd {reward}")    
+        return reward
     
 
     def _calcultion_state(self,task_index,resource_index):
@@ -155,6 +165,7 @@ class Engine():
         if max(self.temp_state)>1:
             print("********************************************")
             print(self.temp_state)
+            pass
         return self.temp_state
     
     def set_property_to_resource(self,resource_index,summary_changed):

@@ -14,11 +14,10 @@ class Config:
         self.config = configparser.ConfigParser()
         self.config.read(self.config_file)
 
-    def get_config(self,section,name,type=""):
-        if type=="":
-            return self.config.getint(section, name)
-        else:
-            return self.config.get(section,name)
+    def get_config(self,section,name,type=None):  
+            value=self.config.get(section,name)
+            value = value.split(";")[0].split("#")[0].strip()
+            return int(value) if type is None else value
 
 # Initialize the config (to be used in other modules)
 
