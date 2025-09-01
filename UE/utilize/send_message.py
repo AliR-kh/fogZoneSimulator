@@ -7,7 +7,13 @@ import time
 def send_message(address,port,message):
     CHUNK_SIZE = 8192
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((address,port))
+        while True:
+            try:
+                s.connect((address,port))
+                break
+            except:
+                time.sleep(1)
+            
         data=pickle.dumps(message)
         index=int(len(data)/CHUNK_SIZE)
         min_chunk=0

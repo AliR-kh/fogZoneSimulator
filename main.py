@@ -33,7 +33,6 @@ for i in range(rep_np):
 
     # Step 2: Run program 1 and wait for it to finish
     print("Running program 1...")
-    time.sleep(5)
     program1 = subprocess.Popen(['python',os.getcwd()+'\\UE\\main.py'], shell=True)
     program1.wait()  # Wait for program 1 to complete
     print("Program 1 finished")
