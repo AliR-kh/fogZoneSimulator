@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../define_project"
+			"path": "../../plot"
 		}
 	],
 	"settings": {}

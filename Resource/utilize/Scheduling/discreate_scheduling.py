@@ -1,4 +1,5 @@
 from utilize.Algorithms.pso import PSO
+from utilize.Algorithms.ms_pso import MS_PSO
 from utilize.Algorithms.random import Random
 from utilize.Execution.execut import Execut
 from utilize.Algorithms.DRL.main import Run
@@ -149,12 +150,13 @@ def set_task():
 def scheduling(ue_zone,Job_list,Resource_list):
     scheduled_list=[]
     print(f"in discreate {len(Job_list)}")
-    if True:
+    if False:
         Cls=Run(Resource_list,{"jobs":Job_list,"edges":ue_zone})
         scheduled_list=Cls.scheduling()
         del Cls
     else:
         Cls=PSO()
+        # print(Resource_list)
         scheduled_list=Cls.run(Resource_list,Job_list,ue_zone)
         
         

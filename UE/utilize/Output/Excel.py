@@ -2,6 +2,7 @@ import os
 import time
 import pandas as pd
 class Excel:
+    path=r"C:\Users\Aragorn\Desktop\plot\excel_files\section_5\zone\mont_40\\"
     # this function calculate total_makespan,makespan,energy,cost,run_time for all zones
     def calculation_zone(self,result,total_time):
         head=["zone_id","total_makespan","makespan","energy","cost","run_time"]
@@ -25,10 +26,10 @@ class Excel:
                 temp.append(result[i][j])    
             my_data.append(temp)
         my_data.append(["All Zones",max_makespan,max_makespan,sum_energry,sum_cost,total_time])    
-        path=os.getcwd()+'\\UE\\OutputFile\\'
+        # path=os.getcwd()+'\\UE\\OutputFile\\'
         name='output_calculation_'+time.strftime('%Y%B%d_%H_%M_%S')+'.xlsx'
         df = pd.DataFrame(my_data, columns=head)
-        df.to_excel(path+name, index=False)       
+        df.to_excel(self.path+name, index=False)       
         
         # this function calculate "ue_zone_id","device_id","id","start_time","makespan","time","time_queue","transfer_time","execution","type_resource","id_resource","parentid" for each task
     def workflow(self,zones):
@@ -72,6 +73,6 @@ class Excel:
             ]
             my_data.append(temp)                    
         df = pd.DataFrame(my_data, columns=head)
-        path=os.getcwd()+'\\UE\\OutputFile\\'
+        # path=os.getcwd()+'\\UE\\OutputFile\\'
         name='output_all_workflow_'+time.strftime('%Y%B%d_%H_%M_%S')+'.xlsx'
-        df.to_excel(path+name, index=False)
+        df.to_excel(self.path+name, index=False)
