@@ -5,6 +5,9 @@ class Excel:
     # path=r"C:\Users\Aragorn\Desktop\plot\excel_files\section_5\zone\mont_40\\"
     path=os.getcwd()+'\\UE\\OutputFile\\'
     # this function calculate total_makespan,makespan,energy,cost,run_time for all zones
+    def __init__(self):
+        if not os.path.isdir(self.path):
+            os.mkdir(self.path)
     def calculation_zone(self,result,total_time):
         head=["zone_id","total_makespan","makespan","energy","cost","run_time"]
         max_makespan=0
